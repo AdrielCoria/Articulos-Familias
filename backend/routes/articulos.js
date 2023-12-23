@@ -3,8 +3,9 @@ import expres from 'express';
 
 // creacion de rutas con express
 const router = expres.Router();
-import {db} from '../base-orm/sequelize-init.js';
+import { db } from '../base-orm/sequelize-init.js';
 import { Op, ValidationError } from 'sequelize';
+import auth from '../seguridad/auth.js';
 
 
 // endpoint Get
@@ -91,7 +92,7 @@ router.post("/api/articulos/", async function (req, res) {
         if (error instanceof ValidationError) {
             // si son errores de validación, los devolvemos
             let messages = '';
-            error.errors.forEach((x) => messages += (x.path ?? 'campo') + ':' + x.message + '\n');            
+            error.errors.forEach((x) => messages += (x.path ?? 'campo') + ':' + x.message + '\n');
             res.status(400).json({ message: messages });
         }
         else {
@@ -165,6 +166,7 @@ router.put("/api/articulos/:id", async function (req, res) {
     }
 });
 
+// endpoint delete
 router.delete("/api/articulos/:id", async function (req, res) {
     // #swagger.tags = ['Articulos']
     // #swagger.summary = 'elimina un Articulo'
@@ -203,5 +205,28 @@ router.delete("/api/articulos/:id", async function (req, res) {
         }
     }
 });
+
+// bloque de seguridad: autorizacion - Entramos con {user: admin, clave: 456}
+router.get("/api/jwt/articulos", auth.authenticateJWT, async function (req, res, next) {
+    const { rol } = res.locals.user;
+    if (rol !== "admin") {
+        return res.status(403).json({ message: "usuario no autorizado!" });
+    }
+    let items = await db.articulos.findAll({
+        attributes: [
+            "IdArticulo",
+            "Nombre",
+            "Precio",
+            "CodigoDeBarra",
+            "IdArticuloFamilia",
+            "Stock",
+            "FechaAlta",
+            "Activo"
+        ],
+        order: [["Nombre", "ASC"]]
+    });
+    res.json(items);
+});
+
 
 export default router;

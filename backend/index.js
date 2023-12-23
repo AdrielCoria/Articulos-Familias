@@ -3,6 +3,7 @@ import express from "express";
 import articulofamiliamockRouter from "./routes/articulosfamiliasmock.js";
 import articuloFamiliaRouter from './routes/articulosfamilias.js'
 import articulos from './routes/articulos.js';
+import seguridad from './routes/seguridad.js';
 
 // crea la base de datos si no existe
 //import './base-orm/sqlite-init.js';
@@ -26,6 +27,9 @@ app.use(articuloFamiliaRouter);
 
 // cargamos el modulo de articulos (get - get/id - post - put - delete)
 app.use(articulos);
+
+// cargamos el modulo de seguridad
+app.use(seguridad);
 
 // levantamos servidor
 const puerto = 3000;
