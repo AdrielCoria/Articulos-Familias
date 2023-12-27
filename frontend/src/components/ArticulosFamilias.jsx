@@ -9,7 +9,7 @@ import { articuloFamiliasMockService } from '../services/articulosFamilias-mock-
 
 
 function ArticulosFamilias() {
-    const tituloPagina = 'ArticulosFamiliasMock';
+    const tituloPagina = 'Articulos Familias';
     
     // Sintaxis del useState
     // const [arreglo, setArreglo] = useState(valorInicial);

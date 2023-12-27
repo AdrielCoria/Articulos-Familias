@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const Inicio = () => {
     return (
@@ -14,10 +15,13 @@ export const Inicio = () => {
                 Frontend: Single Page Aplication, HTML, CSS, Bootstrap, NodeJs,
                 Javascript y React.
             </p>
-            <button className='btn btn-lg btn-primary'>
+            {/* <button className='btn btn-lg btn-primary'>
                 <i className='fa fa-search'></i>
                 Ver Articulos Famlias
-            </button>
+            </button> */}
+            <Link to='/articulosfamilias' className='btn btn-lg btn-primary'>
+                <i className='fa fa-search'>Ver Articulos Familias</i>
+            </Link>
         </div>
     )
 }

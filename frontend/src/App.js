@@ -1,16 +1,27 @@
 // imports
 import React from 'react';
-//import { Inicio } from './components/Inicio';
-import './App.css';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Inicio } from './components/Inicio';
 import { ArticulosFamilias } from './components/ArticulosFamilias';
-
+import Menu from './components/Menu';
+import { Footer } from './components/Footer';
+import './App.css';
 
 function App() {
   return (
     <>
-      <div className='divBody'>
-        <ArticulosFamilias/>
-      </div>
+      <BrowserRouter>
+        <Menu/>
+        <div className='divBody'>
+          {/* Creamos las rutas necesarias */}
+          <Routes>
+            <Route path='/inicio' element={<Inicio/>}/>
+            <Route path='/articulosfamilias' element={<ArticulosFamilias/>}/>
+            <Route path='/*' element={<Inicio/>} replace/>            
+          </Routes>
+        </div>
+        <Footer/>
+      </BrowserRouter>
     </>
   );
 }
