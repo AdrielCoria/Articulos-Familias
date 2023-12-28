@@ -4,7 +4,9 @@ import moment from "moment"; // trabajar con fechas
 import ArticulosBuscar from "./ArticulosBuscar";
 import ArticulosListado from "./ArticulosListado";
 import ArticulosRegistro from "./ArticulosRegistro";
-import { articulosfamiliasService } from "../../services/articulosFamilias-mock-service.js";
+//import { articulosfamiliasService } from "../../services/articulosFamilias-mock-service.js";
+import { articulosService } from "../../services/articulos.service";
+import { articulosfamiliasService } from "../../services/articulosFamilias.service";
 
 export default function Articulos() {
     // acciones a realizar
@@ -29,56 +31,89 @@ export default function Articulos() {
     const [Paginas, setPaginas] = useState([]); // Listado de páginas
     const [ArticulosFamilias, setArticulosFamilias] = useState(null);
 
-    // cargar al "montar" el componente, solo la primera vez (por la dependencia [])
+    // cargar al "montar" el componente, solo la primera vez (por la dependencia []) - Esto es del mock
+    // useEffect(() => {
+    //     async function BuscarArticulosFamilias() {
+    //         let data = await articulosfamiliasService.Buscar();
+    //         setArticulosFamilias(data);
+    //     }
+    //     BuscarArticulosFamilias();
+    // }, []);
+
+    // agregamos el service de articulosfamilias original
     useEffect(() => {
         async function BuscarArticulosFamilias() {
             let data = await articulosfamiliasService.Buscar();
             setArticulosFamilias(data);
         }
         BuscarArticulosFamilias();
-    }, []);
+    }, [])
 
     // función que nos permite realizar una búsqueda(datos hardcodeados)
-    async function Buscar() {
-        alert("Buscando...");
-        // hardcodeados 2 articulos para probar
-        setItems(
-            [
+    // async function Buscar() {
+    //     alert("Buscando...");
+    //     // hardcodeados 2 articulos para probar
+    //     setItems(
+    //         [
 
-                {
-                    IdArticulo: 108,
-                    Nombre: "Adaptador usb wifi tl-wn722n",
-                    Precio: 219.0,
-                    CodigoDeBarra: "0693536405046",
-                    IdArticuloFamilia: 9,
-                    Stock: 898,
-                    FechaAlta: "2017-01-23T00:00:00",
-                    Activo: false,
-                },
-                {
-                    IdArticulo: 139,
-                    Nombre: "Aire acondicionado daewoo 3200fc dwt23200fc",
-                    Precio: 5899.0,
-                    CodigoDeBarra: "0779816944014",
-                    IdArticuloFamilia: 7,
-                    Stock: 668,
-                    FechaAlta: "2017-01-04T00:00:00",
-                    Activo: true,
-                }
-            ]
-        );
+    //             {
+    //                 IdArticulo: 108,
+    //                 Nombre: "Adaptador usb wifi tl-wn722n",
+    //                 Precio: 219.0,
+    //                 CodigoDeBarra: "0693536405046",
+    //                 IdArticuloFamilia: 9,
+    //                 Stock: 898,
+    //                 FechaAlta: "2017-01-23T00:00:00",
+    //                 Activo: false,
+    //             },
+    //             {
+    //                 IdArticulo: 139,
+    //                 Nombre: "Aire acondicionado daewoo 3200fc dwt23200fc",
+    //                 Precio: 5899.0,
+    //                 CodigoDeBarra: "0779816944014",
+    //                 IdArticuloFamilia: 7,
+    //                 Stock: 668,
+    //                 FechaAlta: "2017-01-04T00:00:00",
+    //                 Activo: true,
+    //             }
+    //         ]
+    //     );
+    // }
+    async function Buscar(_pagina) {
+        if (_pagina && _pagina !== Pagina) {
+            setPagina(_pagina);
+        }
+        else {
+            _pagina = Pagina;
+        }
+
+        // consumimos el service de articulos
+        const data = await articulosService.Buscar(Nombre, Activo, _pagina);
+        setItems(data.Items);
+
+        // generamos un array de las páginas para mostrar en select del paginador
+        const arrayPaginas = [];
+        for (let i = 1; i <= Math.ceil(data.RegistrosTotal / 10); i++) {
+            arrayPaginas.push(i);
+        }
+        setPaginas(arrayPaginas);
     }
 
     // función que nos permite realizar un búsqueda por el campo id
+    // async function BuscarPorId(item, accionABMC) {
+    //     setAccionABMC(accionABMC);
+    //     setItem(item);
+    //     if (accionABMC === "C") {
+    //         alert("Consultando...");
+    //     }
+    //     if (accionABMC === "M") {
+    //         alert("Modificando...");
+    //     }
+    // }
     async function BuscarPorId(item, accionABMC) {
+        const data = await articulosService.BuscarPorId(item);
+        setItem(data);
         setAccionABMC(accionABMC);
-        setItem(item);
-        if (accionABMC === "C") {
-            alert("Consultando...");
-        }
-        if (accionABMC === "M") {
-            alert("Modificando...");
-        }
     }
 
     // función que nos permite realizar una consulta por id, llamando a la función BuscarPorId()
@@ -96,9 +131,24 @@ export default function Articulos() {
     }
 
     // función que nos permite agregar un item
+    // function Agregar() {
+    //     setAccionABMC("A");
+    //     alert("preparando el Alta...");
+    // }
+
+
     function Agregar() {
         setAccionABMC("A");
-        alert("preparando el Alta...");
+        setItem({
+            IdArticulo: 0,
+            Nombre: null,
+            Precio: null,
+            Stock: null,
+            CodigoDeBarra: null,
+            IdArticuloFamilia: null,
+            FechaAlta: moment(new Date()).format("YYYY-MM-DD"),
+            Activo: true,
+        })
     }
 
     // función que nos permite realizar una impresión
@@ -107,18 +157,43 @@ export default function Articulos() {
     }
 
     // función que nos permite activar o desactivar un articulo de la lista
+    // async function ActivarDesactivar(item) {
+    //     const resp = window.confirm("¿Está seguro que quiere " + (item.Activo ? "desactivar" : "activar") + " el registro?");
+    //     if (resp) {
+    //         alert("Activado/Desactivado ...");
+    //     }
+    // }
+
     async function ActivarDesactivar(item) {
-        const resp = window.confirm("¿Está seguro que quiere " + (item.Activo ? "desactivar" : "activar") + " el registro?");
+        const resp = window.confirm("Está seguro que quiere " + (item.Activo ? "desactivar" : "activar" + " el registro?"));
         if (resp) {
-            alert("Activado/Desactivado ...");
+            await articulosService.ActivarDesactivar(item);
+            await Buscar();
         }
     }
 
     // función que nos permite grabar un elemento al listado de articulos
-    async function Grabar(item) {
-        alert("Registro " + (AccionABMC === "A" ? "agregado" : "modificado" + " correcto."));
+    // async function Grabar(item) {
+    //     alert("Registro " + (AccionABMC === "A" ? "agregado" : "modificado" + " correcto."));
 
+    //     Volver();
+    // }
+
+    async function Grabar(item) {
+        // agregar o modificar
+        try {
+            await articulosService.Grabar(item);
+        }
+        catch (error) {
+            alert(error?.response?.data?.message ?? error.toString());
+            return;
+        }
+        await Buscar();
         Volver();
+
+        setTimeout(() => {
+            alert("Registro " + (AccionABMC === "A" ? "agregado" : "modificado" + " correctamente."));
+        }, 0);
     }
 
     // Volver/Cancelar desde Agregar/Modificar/Consultar (nos muestra el listado de articulos completo) por defecto
