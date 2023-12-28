@@ -5,7 +5,7 @@ function Footer() {
     return (
         <footer className='text-center'>
             <small>
-                <span>© Pymes 2023</span>
+                <span>© Pymes 2024</span>
                 <span className='m-4'>-</span>
                 <a href="tel:113">
                     <span className='fa fa-phone'></span>

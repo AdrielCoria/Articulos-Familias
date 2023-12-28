@@ -38,6 +38,6 @@ async function Eliminar(IdArticuloFamilia) {
     }
 }
 
-export const articuloFamiliasMockService ={
+export const articulosfamiliasService  ={
     Buscar, BuscarPorId, Agregar, Modificar, Eliminar
 }

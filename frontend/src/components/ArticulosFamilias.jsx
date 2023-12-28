@@ -1,7 +1,7 @@
 // imports
 //import arrayArticuloFamilia from "../datos-mock/articulosfamilias-mock";
 import React, {useState, useEffect} from 'react';
-import { articuloFamiliasMockService } from '../services/articulosFamilias-mock-service';
+import { articulosfamiliasService  } from '../services/articulosFamilias-mock-service';
 
 
 // constantes
@@ -24,7 +24,7 @@ function ArticulosFamilias() {
 
     // Funcion que nos va a ver permitir modificar el arreglo de articulosfamilias
     async function BuscarArticulosFamilias(){
-        let data = await articuloFamiliasMockService.Buscar();
+        let data = await articulosfamiliasService.Buscar();
         setArticulosFamilias(data);
     }
     
