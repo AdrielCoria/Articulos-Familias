@@ -165,7 +165,7 @@ export default function Articulos() {
     // }
 
     async function ActivarDesactivar(item) {
-        const resp = window.confirm("Está seguro que quiere " + (item.Activo ? "desactivar" : "activar" + " el registro?"));
+        const resp = window.confirm("Está seguro que quiere " + (item.Activo ? "desactivar" : "activar") + " el registro?");
         if (resp) {
             await articulosService.ActivarDesactivar(item);
             await Buscar();
