@@ -7,6 +7,8 @@ import ArticulosRegistro from "./ArticulosRegistro";
 //import { articulosfamiliasService } from "../../services/articulosFamilias-mock-service.js";
 import { articulosService } from "../../services/articulos.service";
 import { articulosfamiliasService } from "../../services/articulosFamilias.service";
+import modalDialogService from "../../services/ModalDialog";
+
 
 export default function Articulos() {
     // acciones a realizar
@@ -83,20 +85,22 @@ export default function Articulos() {
         if (_pagina && _pagina !== Pagina) {
             setPagina(_pagina);
         }
+        // OJO Pagina (y cualquier estado...) se actualiza para el proximo render, para buscar usamos el parametro _pagina
         else {
             _pagina = Pagina;
         }
-
-        // consumimos el service de articulos
-        const data = await articulosService.Buscar(Nombre, Activo, _pagina);
+        modalDialogService.BloquearPantalla(true);
+        const data = await articulosService.Buscar(Nombre, Activo,
+            _pagina);
+        modalDialogService.BloquearPantalla(false);
         setItems(data.Items);
-
-        // generamos un array de las páginas para mostrar en select del paginador
-        const arrayPaginas = [];
+        setRegistrosTotal(data.RegistrosTotal);
+        //generar array de las paginas para mostrar en select del paginador
+        const arrPaginas = [];
         for (let i = 1; i <= Math.ceil(data.RegistrosTotal / 10); i++) {
-            arrayPaginas.push(i);
+            arrPaginas.push(i);
         }
-        setPaginas(arrayPaginas);
+        setPaginas(arrPaginas);
     }
 
     // función que nos permite realizar un búsqueda por el campo id
@@ -124,7 +128,7 @@ export default function Articulos() {
     // función que nos permite realizar modificaciones por el campo id, llamamos a la función BuscarPorId
     function Modificar(item) {
         if (!item.Activo) {
-            alert("No puede modificarse un registro Inactivo.");
+            modalDialogService.Alert("No puede modificarse un registro Inactivo.");
             return;
         }
         BuscarPorId(item, "M"); // paso la accionABMC pq es asincrono la busqueda y luego de ejecutarse quiero cambiar el estado accionABMC
@@ -165,11 +169,18 @@ export default function Articulos() {
     // }
 
     async function ActivarDesactivar(item) {
-        const resp = window.confirm("Está seguro que quiere " + (item.Activo ? "desactivar" : "activar") + " el registro?");
-        if (resp) {
-            await articulosService.ActivarDesactivar(item);
-            await Buscar();
-        }
+        modalDialogService.Confirm(
+            "Esta seguro que quiere " +
+            (item.Activo ? "desactivar" : "activar") +
+            " el registro?",
+            undefined,
+            undefined,
+            undefined,
+            async () => {
+                await articulosService.ActivarDesactivar(item);
+                await Buscar();
+            }
+        );
     }
 
     // función que nos permite grabar un elemento al listado de articulos
